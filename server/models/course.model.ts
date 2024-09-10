@@ -14,28 +14,28 @@ interface IReview extends Document{
 
 interface ILink extends Document{
     title: string;
-    url: sting;
+    url: string;
 }
 
 interface ICourseData extends Document{
     title: string;
     description: string;
-    videourl: string;
+    videoUrl: string;
     videoThumbnail: object;
     videoSection: string;
     videoLength: string;
     videoPlayer: string;
     links: ILink[];
-    suggestion: stringl
-    questions: IComment[];
+    suggestion: string;
+    questions: IComments[];
 }
 
 interface ICourse extends Document{
     name: string;
     description?: string;
     price: number;
-    estimatedPricce?: number;
-    thumbanail: object;
+    estimatedPrice?: number;
+    thumbnail: object;
     tags: string;
     demoUrl: string; 
     benefits:{title:string}[];
@@ -60,7 +60,7 @@ const linkSchema = new Schema<ILink>({
     url: String
 });
 
-const commentSchema = new Schema<IComment>({
+const commentSchema = new Schema<IComments>({
     user: Object,
     comment: String,
     commentReplies: [Object]
@@ -117,11 +117,11 @@ const courseSchema= new Schema<ICourse>({
     prerequisites:[{title: String}],
     reviews:[reviewSchema],
     courseData:[courseDataSchema],
-    ratings:{
+    rating:{
         type: Number,
         default: 0,
     },
-    purchase:{
+    purchased:{
         type: Number,
         default: 0,
     }
