@@ -46,14 +46,6 @@ interface ICourse extends Document{
     purchased?: number
 }
 
-const reviewSchema= new Schema<IReview>({
-    user: Object,
-    rating:{
-        type:Number,
-        default: 0
-    },
-    comment:String
-});
 
 const linkSchema = new Schema<ILink>({
     title: String,
@@ -63,8 +55,18 @@ const linkSchema = new Schema<ILink>({
 const commentSchema = new Schema<IComments>({
     user: Object,
     comment: String,
-    commentReplies: [Object]
 });
+
+const reviewSchema= new Schema<IReview>({
+    user: Object,
+    rating:{
+        type:Number,
+        default: 0
+    },
+    comment:String,
+    commentReplies: [commentSchema]
+});
+
 
 const courseDataSchema = new Schema<ICourseData>({
     videoUrl: String,
