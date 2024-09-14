@@ -5,6 +5,7 @@ import cloudinary  from "cloudinary"
 import { createCourse } from "../services/course.service";
 import CourseModel from "../models/course.model";
 import { redis } from "../utils/redis";
+import userModel from "../models/user.model";
 
 //upload course
 export const uploadCourse= CatchAsyncError( async(req:Request,res:Response,next:NextFunction)=>{
@@ -113,6 +114,34 @@ export const getAllCourses= CatchAsyncError( async(req:Request,res:Response,next
             courses
         })
         }  
+    }
+    catch(error: any){
+        return next(new ErrorHandler(error.message, 500));
+    }
+})
+
+//get course content -- only for valid users
+export const getCourseByUser= CatchAsyncError( async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const user = await userModel.findById(req.user?._id);
+        const userCourseList = user?.courses;
+
+        const courseId = req.params.id;
+
+        const courseExists = userCourseList?.find((course:any)=> {
+            return course._id.toString() === courseId;
+        }); 
+
+        if(!courseExists){
+            return next(new ErrorHandler("Course not found", 404));
+        }
+
+        const content = await CourseModel.findOne({ _id: courseId });
+
+        res.status(200).json({
+            success: true,
+            content
+        })
     }
     catch(error: any){
         return next(new ErrorHandler(error.message, 500));
