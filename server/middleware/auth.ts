@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { CatchAsyncError } from "./catchAsyncErrors";
+import { CatchAsyncErrors } from "./CatchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
 import jwt,{JwtPayload} from "jsonwebtoken";
 import { redis } from "../utils/redis";
@@ -7,7 +7,7 @@ import userModel from "../models/user.model";
 
 
 //authenticated user
-export const isAuthenticated = CatchAsyncError(async (req:Request,res:Response,next:NextFunction)=>{
+export const isAuthenticated = CatchAsyncErrors(async (req:Request,res:Response,next:NextFunction)=>{
     const access_token = req.cookies.access_token as string;
 
     if(!access_token){

@@ -1,10 +1,15 @@
 import mongoose, { Document, Model , Schema} from "mongoose"
+import { IUser } from "./user.model";
 
 interface IComments extends Document{
     user:object;
     comment:string;
 }
-
+interface IQuestion extends Document {
+    user: IUser;
+    question: string;
+    questionReplies: IQuestion[];
+  }
 interface IReview extends Document{
     user: object;
     rating: number;
@@ -26,7 +31,7 @@ interface ICourseData extends Document{
     videoPlayer: string;
     links: ILink[];
     suggestion: string;
-    questions: IComments[];
+    questions: IQuestion[];
 }
 
 interface ICourse extends Document{
@@ -36,6 +41,7 @@ interface ICourse extends Document{
     estimatedPrice?: number;
     thumbnail: object;
     tags: string;
+    level: string;
     demoUrl: string; 
     benefits:{title:string}[];
     prerequisites:{title: string}[];
@@ -66,6 +72,11 @@ const reviewSchema= new Schema<IReview>({
     commentReplies: [commentSchema]
 });
 
+const questionSchema = new Schema<IQuestion>({
+    user: Object,
+    question: String,
+    questionReplies: [Object],
+  });
 
 const courseDataSchema = new Schema<ICourseData>({
     videoUrl: String,
@@ -76,7 +87,7 @@ const courseDataSchema = new Schema<ICourseData>({
     videoPlayer: String,
     links:[linkSchema],
     suggestion:String,
-    questions: [commentSchema]
+    questions: [questionSchema]
 })
 
 const courseSchema= new Schema<ICourse>({
@@ -105,6 +116,10 @@ const courseSchema= new Schema<ICourse>({
             type: String,
         }
     },
+    level: {
+        type: String,
+        required: true,
+      },
     tags:{
         type: String,
         required: true,

@@ -2,7 +2,7 @@ require("dotenv").config();
 import { Request, Response, NextFunction } from "express";
 import userModel, { IUser } from "../models/user.model";
 import ErrorHandler from "../utils/ErrorHandler";
-import { CatchAsyncError } from "../middleware/catchAsyncErrors";
+import { CatchAsyncError } from "../middlewares/CatchAsyncErrors";
 import jwt, { JwtPayload, Secret } from "jsonwebtoken";
 import sendEmail from "../utils/sendMail";
 import { accessTokenOptions, refreshTokenOptions, sendToken } from "../utils/jwt";
@@ -387,3 +387,50 @@ export const updateUserInfo =CatchAsyncError(async (req:Request,res:Response
       return next( new ErrorHandler("Update profile picture failed", 400))
     }
   })
+
+  // GET ALL USERS FUNCTION - [ ADMIN ]
+export const getUsers = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUserService(res);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+// UPDATE USER ROLE FUNCTION - [ ADMIN ]
+export const updateUserRole = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, role } = req.body;
+      updateUserRoleService(res, id, role);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
+
+// DELETE USER FUNCTION - [ ADMIN ]
+export const deleteUser = CatchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      const user = await UserModel.findById(id);
+      if (!user) {
+        return next(new ErrorHandler(UserNotFoundMessage, 404));
+      }
+
+      await user.deleteOne({ id });
+      await redis.del(id);
+
+      res.status(200).json({
+        success: true,
+        message: "User deleted successfully",
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }
+);
